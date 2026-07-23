@@ -1,0 +1,36 @@
+{
+    "name": "express_typescript_template",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon  src/server.ts",
+        "output": "npx tsc",
+        "start": "ts-node src/server.ts",
+        "model": "npx sequelize-cli model:generate",
+        "model:run": "npx sequelize-cli db:migrate",
+        "model:undo": "npx sequelize-cli db:migrate:undo"
+    },
+    "type": "module",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "mysql2": "^3.23.1",
+        "sequelize": "^6.37.8",
+        "winston": "^3.19.0",
+        "winston-daily-rotate-file": "^5.0.0",
+        "zod": "^4.4.3"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.6.0",
+        "nodemon": "^3.1.14",
+        "sequelize-cli": "^6.6.5",
+        "ts-node": "^10.9.2",
+        "typescript": "^6.0.3"
+    }
+}
