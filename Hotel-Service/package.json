@@ -8,8 +8,8 @@
         "output": "npx tsc",
         "start": "ts-node src/server.ts",
         "model": "npx sequelize-cli model:generate",
-        "model:run": "npx sequelize-cli db:migrate",
-        "model:undo": "npx sequelize-cli db:migrate:undo"
+        "migration:run": "npx sequelize-cli db:migrate",
+        "migration": " npx sequelize-cli migration:generate" 
     },
     "type": "module",
     "keywords": [],
