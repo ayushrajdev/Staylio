@@ -1,21 +1,18 @@
-import Hotel from '../db/models/hotel.ts';
-import type { CreateHotelDto } from '../dtos/hotel.dto.ts';
+import Hotel from "../db/models/hotel.ts";
+import { CrudRepository } from "./Crud.repository.ts";
 
-export class HotelRepository {
-    hotelRepository;
+export class HotelRepository extends CrudRepository<Hotel> {
     constructor() {
-        this.hotelRepository = Hotel;
+        super(Hotel);
     }
-    async create(createHotelDto: CreateHotelDto) {
-        const data = await this.hotelRepository.create({ ...createHotelDto });
-        return data;
+
+    // hotel specific queries
+
+    async findByLocation(location: string) {
+        return this.model.findAll({
+            where: {
+                location,
+            },
+        });
     }
-    async findById(id: number) {
-        const hotel = await this.hotelRepository.findByPk(id);
-        if (!hotel) {
-            throw new Error('Hotel not found');
-        }
-        return hotel;
-    }
-    updateById() {}
 }

@@ -1,16 +1,12 @@
-import Hotel from '../db/models/hotel.ts';
-import type { CreateHotelDto } from '../dtos/hotel.dto.ts';
-import { HotelRepository } from '../repositories/hotel.repository.ts';
+import { HotelRepository } from "../repositories/hotel.repository.ts";
+import { CrudService } from "./crud.service.ts";
 
-export default class HotelService {
-    hotelRepository;
+export default class HotelService extends CrudService<HotelRepository> {
     constructor() {
-        this.hotelRepository = new HotelRepository();
+        super(new HotelRepository());
     }
-    async create(createHotelDto: CreateHotelDto) {
-        return this.hotelRepository.create({ ...createHotelDto });
-    }
-    async findById(id: number): Promise<Hotel> {
-        return this.hotelRepository.findById(id);
+
+    findByLocation(location: string) {
+        return this.repository.findByLocation(location);
     }
 }
