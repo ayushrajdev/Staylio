@@ -6,4 +6,5 @@ const v1Router = Router();
 v1Router.use('/ping', pingRouter);
 v1Router.use('/hotels', hotelRouter);
 
+
 export default v1Router;

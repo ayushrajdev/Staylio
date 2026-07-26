@@ -6,7 +6,4 @@ export default class HotelService extends CrudService<HotelRepository> {
         super(new HotelRepository());
     }
 
-    findByLocation(location: string) {
-        return this.repository.findByLocation(location);
-    }
 }

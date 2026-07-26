@@ -6,7 +6,8 @@ export default class HotelController extends CrudController<HotelService> {
         super(new HotelService());
     }
 
+
     // hotel specific endpoints
 
-
+    
 }

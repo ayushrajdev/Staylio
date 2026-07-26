@@ -54,6 +54,7 @@ class ValidatorBuilder {
 
     run() {
         return async (req: Request, res: Response, next: NextFunction) => {
+            console.log(req.body);
             try {
                 const [body, query, params] = await Promise.all([
                     this.bodySchema && this.bodySchema?.parseAsync(req.body),
@@ -74,6 +75,7 @@ class ValidatorBuilder {
                         errors: err,
                     });
                 }
+                
 
                 res.status(400).json({ message: 'Invalid input' });
             }

@@ -6,7 +6,6 @@ import { genericErrorHandler } from './middlewares/error.middleware.ts';
 import logger from './config/logger.config.ts';
 import { attachCorrelationId } from './middlewares/correlation.middleware.ts';
 import { connectDb } from './config/dbConnection.config.ts';
-import Hotel from './db/models/hotel.ts';
 
 const app = express();
 
