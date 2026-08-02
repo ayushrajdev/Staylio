@@ -2,6 +2,7 @@ import { console } from 'inspector/promises';
 import generateIdempotencyKey from '../../utils/helpers/generateIdempotencyKey.ts';
 import IdempotencyRepository from '../idempotency/idempotency.repository.ts';
 import BookingRepository from './booking.repository.ts';
+import prisma from '../../config/prisma.config.ts';
 
 export default class BookingService {
     // Service implementation
@@ -19,26 +20,37 @@ export default class BookingService {
             idempotencyKey,
             booking.id,
         );
-        console.log('Booking created:', booking);
-        console.log('Idempotency key generated:', idempotencyKey);
+
         return { booking, idempotencyKey };
     }
 
     async confirmBooking(idempotencyKey: string) {
-        const booking =
-            await IdempotencyRepository.getIdempotencyKey(idempotencyKey);
+        return await prisma.$transaction(async (tx) => {
+            const idempotency =
+                await IdempotencyRepository.getIdempotencyKeyWithLock(
+                    idempotencyKey,
+                    tx,
+                );
 
-        if (!booking) {
-            throw new Error('Invalid idempotency key');
-        }
-        if (booking.finalized) {
-            throw new Error('Booking already finalized');
-        }
-        const comfirmedBooking = await this.bookingRepository.confirmBooking(
-            booking.bookingId as number,
-        );
+            if (!idempotency || !idempotency.bookingId) {
+                throw new Error('Invalid idempotency key');
+            }
 
-        await IdempotencyRepository.finalizeIdempotencyKey(idempotencyKey); 
-        return comfirmedBooking;
+            if (idempotency.finalized) {
+                throw new Error('Booking already finalized');
+            }
+            const comfirmedBooking =
+                await this.bookingRepository.confirmBooking(
+                    tx,
+                    idempotency.bookingId as number,
+                );
+
+            await IdempotencyRepository.finalizeIdempotencyKey(
+                tx,
+                idempotencyKey,
+            );
+
+            return comfirmedBooking;
+        });
     }
 }

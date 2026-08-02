@@ -14,8 +14,8 @@ export default class BookingRepository {
             data: { status },
         });
     }
-    async confirmBooking(bookingId: number) {
-        return await prisma.booking.update({
+    async confirmBooking(tx: Prisma.TransactionClient, bookingId: number) {
+        return await tx.booking.update({
             where: { id: bookingId },
             data: {
                 status: "CONFIRMED",
@@ -28,8 +28,8 @@ export default class BookingRepository {
         });
     }
 
-    async cancelBooking(bookingId: number) {
-        return await prisma.booking.update({
+    async cancelBooking(tx: Prisma.TransactionClient, bookingId: number) {
+        return await tx.booking.update({
             where: { id: bookingId },
             data: {
                 status: "CANCELLED",
@@ -41,4 +41,13 @@ export default class BookingRepository {
             },
         });
     }
+
+    async deleteBooking(tx: Prisma.TransactionClient, bookingId: number) {
+          await tx.booking.delete({
+            where: { id: bookingId },
+        });  
+    }
+
+            
+
 }

@@ -6,4 +6,6 @@ export default class HotelService extends CrudService<HotelRepository> {
         super(new HotelRepository());
     }
 
+
+
 }
