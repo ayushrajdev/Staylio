@@ -7,8 +7,10 @@ import prisma from './config/prisma.config.ts';
 import registerGlobalErrorHandlers from './utils/startups/registerGlobalErrorHandlers.ts';
 import { logStartupInfo } from './utils/startups/startupLogger.ts';
 import { registerGracefulShutdown } from './utils/startups/gracefulShutdown.ts';
+import redisClient from './config/redis/redis.client.ts';
 
 const app = express();
+
 
 app.use(express.json());
 app.use(express.text());
@@ -21,6 +23,8 @@ app.use(genericErrorHandler);
 
 async function bootstrap() {
     try {
+
+        redisClient.getClient().set("test_key","test_value")
         loadEnv();
 
         registerGlobalErrorHandlers();

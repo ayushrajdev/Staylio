@@ -1,6 +1,7 @@
 import { Server } from "http";
 import logger from "../../config/logger.config.ts";
 import prisma from "../../config/prisma.config.ts";
+import { redisClient } from "../../config/redis/index.ts";
 
 
 export function registerGracefulShutdown(server: Server) {
@@ -32,3 +33,17 @@ export function registerGracefulShutdown(server: Server) {
     process.on("SIGINT", () => shutdown("SIGINT"));
     process.on("SIGTERM", () => shutdown("SIGTERM"));
 }
+
+
+
+async function shutdown(signal: string) {
+
+    console.log(`${signal} received`);
+
+    await redisClient.disconnect();
+
+    process.exit(0);
+}
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
