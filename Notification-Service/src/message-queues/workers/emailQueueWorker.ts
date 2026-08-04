@@ -1,6 +1,8 @@
 import { Worker } from 'bullmq';
 import { Queues } from '../../config/index.config.ts';
 import redisClient from '../../config/redis.config.ts';
+import renderTemplate from '../../templates/template.handler.ts';
+import { sendEmail } from '../../config/nodemailer.config.ts';
 
 export default function EmailQueueWorker() {
     // Create a worker to process jobs from the email queue
@@ -11,13 +13,15 @@ export default function EmailQueueWorker() {
             if (job.name !== 'email') {
                 return;
             }
-            const { to, subject,  } = job.data;
+            const { to, subject, templateId, params } = job.data;
+
             console.log(
                 `Processing job ${job.id} of type ${job.name} with data:`,
                 job.data,
             );
 
-            // call the service layer
+            const content = await renderTemplate(templateId, params);
+            await sendEmail(to, subject, content);
         },
         {
             connection: redisClient,

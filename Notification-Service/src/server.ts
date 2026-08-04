@@ -1,13 +1,11 @@
 import express from 'express';
 import { loadEnv } from './config/index.config.ts';
-import logger from './config/logger.config.ts';
 import router from './index.router.ts';
 import redisClient from './config/redis.config.ts';
-import EmailQueue from './message-queues/queues/emailQueue.ts';
 import { attachCorrelationId } from './common/middlewares/correlation.middleware.ts';
 import { genericErrorHandler } from './common/middlewares/error.middleware.ts';
 import EmailQueueWorker from './message-queues/workers/emailQueueWorker.ts';
-import EmailQueueProducer from './message-queues/producers/emailQueueProducer.ts';
+import transporter from './config/nodemailer.config.ts';
 
 const app = express();
 
@@ -23,23 +21,16 @@ redisClient
     .connect()
     .then(() => {
         console.log('Redis client connected');
-
-        EmailQueueProducer({
-            jobName: 'email',
-            data: {
-                to: 'user@example.com',
-                subject: 'Test Email',
-                templateId: 'test-template',
-                params: { name: 'John Doe' }
+        transporter.verify((error, success) => {
+            if (error) {
+                console.error('SMTP Error:', error);
+            } else {
+                console.log('SMTP Server Ready');
             }
         });
+
         EmailQueueWorker();
         app.listen(3000, () => {
-            // EmailQueue.add('sendEmail', {
-            //     to: 'user@example.com',
-            //     subject: 'Test Email',
-            //     body: 'This is a test email.',
-            // });
             loadEnv();
             console.log('started the server');
         });

@@ -1,14 +1,8 @@
 import EmailQueue from '../queues/emailQueue.ts';
 
-async function EmailQueueProducer({
-    jobName = 'email',
-    data,
-}: {
-    jobName?: string;
-    data: any;
-}) {
+async function EmailQueueProducer(data: any) {
     try {
-        await EmailQueue.add(jobName, data);
+        await EmailQueue.add('email', data);
     } catch (error) {
         console.error(`Error in EmailQueueProducer: ${error}`);
     }
