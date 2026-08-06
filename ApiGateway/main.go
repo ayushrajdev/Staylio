@@ -1,13 +1,13 @@
 package main
 
-import "ApiGateway/app"
+import (
+	"ApiGateway/app"
+	config "ApiGateway/config/env"
+)
 
 func main() {
-	cfg := &app.Config{
-		Addr: ":8080",
-	}
-	app := app.Application{
-		Config: *cfg,
-	}
-	app.Run()
+	config.Load()
+	cfg := app.New_Config()
+	server := app.New_Application(cfg)
+	(*server).Run()
 }
