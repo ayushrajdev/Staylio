@@ -3,14 +3,14 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func SetUpDb() (*sql.DB, error) {
 
-	dsn := "root:995528@tcp(127.0.0.1:3306)/staynest?parseTime=true"
+	dsn := "root:995528@tcp(127.0.0.1:3306)/staylio_apigateway_service?parseTime=true"
 
 	// 2. Open the database handle
 	db, err := sql.Open("mysql", dsn)
@@ -18,7 +18,7 @@ func SetUpDb() (*sql.DB, error) {
 		log.Fatalf("Error parsing DSN: %v", err)
 		return nil, err
 	}
-	defer db.Close() // Ensure pool closes when main exits
+	
 
 	// 3. Set connection pool configurations
 	db.SetMaxOpenConns(25)
@@ -32,5 +32,6 @@ func SetUpDb() (*sql.DB, error) {
 	}
 
 	fmt.Println("Successfully connected to MySQL database!")
-	return db, nil	
+	return db, nil
 }
+

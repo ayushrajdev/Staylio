@@ -18,7 +18,12 @@ func NewUserService(_userRepository db.IUserRepository) IUserService {
 
 func (s *UserService) Register() error {
 	println("inside the user service")
-	s.userRepository.Create()
+	user ,err := s.userRepository.GetById(1)
+	println(user)
+	if err != nil {
+		println(err.Error())
+		return err
+	}
 	return nil
 }	
 func (s *UserService) Login()  {

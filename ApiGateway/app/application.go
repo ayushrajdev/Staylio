@@ -2,6 +2,7 @@ package app
 
 import (
 	config "ApiGateway/config/env"
+	env "ApiGateway/config/db"
 	"ApiGateway/controllers"
 	db "ApiGateway/db/repositories"
 	router "ApiGateway/router"
@@ -33,8 +34,12 @@ func New_Config() *Config {
 }
 
 func (app *Application) Run() error {
-
-	userRepository := db.NewUserRepository()
+	dbconnection, err := env.SetUpDb()
+	if err != nil {
+		return err
+	}
+	defer dbconnection.Close()
+	userRepository := db.NewUserRepository(dbconnection)
 	userService := services.NewUserService(userRepository)
 	userController := controllers.NewUserController(userService)
 	userRouter := router.NewUserRouter(userController)
