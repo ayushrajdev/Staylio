@@ -1,10 +1,12 @@
 package services
 
-import db "ApiGateway/db/repositories"
+import (
+	db "ApiGateway/db/repositories"
+)
 
 type IUserService interface {
-	Register() error
-	Login()
+	Create(username string, email string, password string) error
+	Verify(password string)
 }
 type UserService struct {
 	userRepository db.IUserRepository
@@ -16,16 +18,29 @@ func NewUserService(_userRepository db.IUserRepository) IUserService {
 	}
 }
 
-func (s *UserService) Register() error {
+func (this *UserService) Create(username string, email string, password string) error {
 	println("inside the user service")
-	user ,err := s.userRepository.GetById(1)
-	println(user)
+
+	hashedPassword, err := HashPassword(password)
 	if err != nil {
-		println(err.Error())
 		return err
 	}
+	error := this.userRepository.Create(username, email, hashedPassword)
+	if error != nil {
+		println(error.Error())
+		return error
+	}
 	return nil
-}	
-func (s *UserService) Login()  {
-	
-}	
+}
+
+func (this *UserService) Verify(password string) {
+	user, err := this.userRepository.Verify("ayush@bd.com")
+	if err != nil {
+		return
+	}
+	isCorrect := VerifyPassword(password, user.Password)
+	if !isCorrect {
+		return
+	}
+	GenerateJwtToken()
+}

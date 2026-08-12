@@ -33,6 +33,7 @@ func New_Config() *Config {
 	}
 }
 
+
 func (app *Application) Run() error {
 	dbconnection, err := env.SetUpDb()
 	if err != nil {

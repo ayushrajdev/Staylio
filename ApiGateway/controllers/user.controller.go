@@ -14,8 +14,11 @@ func NewUserController(_userService services.IUserService) *UserController {
 }
 
 
-func (u *UserController) Register(w http.ResponseWriter, r *http.Request) {
+func (this *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	println("inside the user controller")
-	u.userService.Register()
+	// this.userService.Create()
 	w.Write([]byte("user registered"))
+}
+func (this *UserController) Verify(w http.ResponseWriter, r *http.Request) {
+	 this.userService.Verify("hdf")
 }
