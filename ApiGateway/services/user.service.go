@@ -2,10 +2,11 @@ package services
 
 import (
 	db "ApiGateway/db/repositories"
+	"ApiGateway/dtos"
 )
 
 type IUserService interface {
-	Create(username string, email string, password string) error
+	Create(payload *dtos.CreateUserDTO) error
 	Verify(password string)
 }
 type UserService struct {
@@ -18,14 +19,14 @@ func NewUserService(_userRepository db.IUserRepository) IUserService {
 	}
 }
 
-func (this *UserService) Create(username string, email string, password string) error {
+func (this *UserService) Create(payload *dtos.CreateUserDTO) error {
 	println("inside the user service")
-
-	hashedPassword, err := HashPassword(password)
+	println(payload.Username,payload.Email,payload.Password)
+	hashedPassword, err := HashPassword(payload.Password)
 	if err != nil {
 		return err
 	}
-	error := this.userRepository.Create(username, email, hashedPassword)
+	error := this.userRepository.Create(payload.Username,payload.Email, hashedPassword)
 	if error != nil {
 		println(error.Error())
 		return error

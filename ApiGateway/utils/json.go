@@ -2,17 +2,18 @@ package utils
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 )
 
-func WriteHttpResponse(w http.ResponseWriter , status int , data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
-}
-func ReadReqBody(r *http.Request , result any) {
-	decoder:= json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-	decoder.Decode(result)
+var Validator *validator.Validate
 
+func init() {
+	Validator = validator.New(validator.WithRequiredStructEnabled())
+}
+
+func ReadJsonBody(r *http.Request, result any) error {
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields() // Prevent unknown fields from being included in the JSON body
+	return decoder.Decode(result)
 }
