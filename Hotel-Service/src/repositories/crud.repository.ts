@@ -1,10 +1,6 @@
-import type {
-    Model,
-    ModelStatic,
-    CreationAttributes,
-} from "sequelize";
+import type { Model, ModelStatic, CreationAttributes } from 'sequelize';
 
-export class CrudRepository<T extends Model> {
+export abstract class CrudRepository<T extends Model> {
     protected model: ModelStatic<T>;
 
     constructor(model: ModelStatic<T>) {
@@ -23,16 +19,13 @@ export class CrudRepository<T extends Model> {
         const record = await this.model.findByPk(id);
 
         if (!record) {
-            throw new Error("Record not found");
+            throw new Error('Record not found');
         }
 
         return record;
     }
 
-    async update(
-        id: number,
-        data: Partial<CreationAttributes<T>>,
-    ): Promise<T> {
+    async update(id: number, data: Partial<CreationAttributes<T>>): Promise<T> {
         const record = await this.findById(id);
 
         await record.update(data);
