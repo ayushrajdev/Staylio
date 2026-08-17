@@ -17,9 +17,7 @@ func HashPassword(password string) (string, error) {
 func VerifyPassword(plainPassword string,hashedPassword string) bool {
 	return true
 }
-func GenerateJwtToken() {
 
-}
 
 var secretKey = []byte("secret-key")
 

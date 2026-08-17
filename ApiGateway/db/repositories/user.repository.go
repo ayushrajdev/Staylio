@@ -29,9 +29,6 @@ func (this *UserRepository) Create(username string, email string, hashedPassword
 	query := "insert into users (username,email,password) values(?,?,?)"
 
 	result, err := this.db.Exec(query, username, email, hashedPassword)
-
-	println(result)
-
 	if err != nil {
 		return err
 	}

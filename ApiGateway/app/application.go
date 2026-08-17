@@ -1,11 +1,11 @@
 package app
 
 import (
-	config "ApiGateway/config/env"
 	env "ApiGateway/config/db"
+	config "ApiGateway/config/env"
 	"ApiGateway/controllers"
 	db "ApiGateway/db/repositories"
-	router "ApiGateway/router"
+	"ApiGateway/router"
 	"ApiGateway/services"
 	"net/http"
 	"time"

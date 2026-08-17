@@ -3,6 +3,7 @@ package services
 import (
 	db "ApiGateway/db/repositories"
 	"ApiGateway/dtos"
+	"fmt"
 )
 
 type IUserService interface {
@@ -26,11 +27,14 @@ func (this *UserService) Create(payload *dtos.CreateUserDTO) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(hashedPassword)
 	error := this.userRepository.Create(payload.Username,payload.Email, hashedPassword)
 	if error != nil {
 		println(error.Error())
 		return error
 	}
+
+
 	return nil
 }
 
@@ -43,5 +47,4 @@ func (this *UserService) Verify(password string) {
 	if !isCorrect {
 		return
 	}
-	GenerateJwtToken()
 }
