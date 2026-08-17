@@ -12,6 +12,7 @@ type Router interface{
 func SetUpRouter(userRouter Router) *chi.Mux {
 	chiRouter := chi.NewRouter()
 	chiRouter.Use(middlewares.Logger)
+	chiRouter.Use(middlewares.RateLimiter)
 	userRouter.Register(chiRouter)
 	return chiRouter
 }
