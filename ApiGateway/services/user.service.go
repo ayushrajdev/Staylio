@@ -3,6 +3,7 @@ package services
 import (
 	db "ApiGateway/db/repositories"
 	"ApiGateway/dtos"
+	"ApiGateway/utils/helpers"
 	"fmt"
 )
 
@@ -23,7 +24,7 @@ func NewUserService(_userRepository db.IUserRepository) IUserService {
 func (this *UserService) Create(payload *dtos.CreateUserDTO) error {
 	println("inside the user service")
 	println(payload.Username,payload.Email,payload.Password)
-	hashedPassword, err := HashPassword(payload.Password)
+	hashedPassword, err := helpers.HashPassword(payload.Password)
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package middlewares
 import (
 	"ApiGateway/dtos"
 	"ApiGateway/utils"
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -25,7 +26,9 @@ func ValidateLoginUserRequest(next http.Handler) http.Handler {
 			http.Error(w, "Validation failed", http.StatusBadRequest)
 			return
 		}
-		next.ServeHTTP(w, r)
+
+		ctx := context.WithValue(r.Context(), "payload", payload)
+		next.ServeHTTP(w, r.WithContext(ctx))
 
 		// after handler
 	})
@@ -48,9 +51,9 @@ func ValidateCreateUserRequest(next http.Handler) http.Handler {
 			http.Error(w, "Validation failed", http.StatusBadRequest)
 			return
 		}
+		ctx := context.WithValue(r.Context(), "payload", payload)
+		next.ServeHTTP(w, r.WithContext(ctx))
 
-		next.ServeHTTP(w, r)
-		
 		// after handler
 	})
 }
