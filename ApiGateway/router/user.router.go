@@ -17,6 +17,7 @@ func NewUserRouter(_userController *controllers.UserController) Router {
 }
 
 func (u *UserRouter) Register(r chi.Router) {
-	r.With(middlewares.ValidateLoginUserRequest).Post("/register", u.userController.Verify)
-	r.With(middlewares.ValidateCreateUserRequest).Post("/login", u.userController.Verify)
+	r.With(middlewares.ValidateCreateUserRequest).Post("/register", u.userController.Create)
+	r.With(middlewares.ValidateLoginUserRequest).Post("/login", u.userController.Verify)
+	r.With(middlewares.AuthMiddleware).Get("/profile", u.userController.GetProfile)
 }

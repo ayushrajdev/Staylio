@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"context"
-	"net/http"
 	"github.com/golang-jwt/jwt/v5"
+	"net/http"
 )
 
 type contextKey string
@@ -24,8 +24,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "Authentication required", http.StatusUnauthorized)
 			return
 		}
-
-		
 
 		tokenString := cookie.Value
 
