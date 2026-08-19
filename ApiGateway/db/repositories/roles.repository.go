@@ -43,9 +43,9 @@ func (this *RoleRepository) GetRoleByName(name string) (*models.Role, error) {
 	}
 	return role, nil
 }
-func (r *RoleRepository) GetAllRoles() ([]*models.Role, error) {
+func (this *RoleRepository) GetAllRoles() ([]*models.Role, error) {
 	query := "SELECT id, name, description, created_at, updated_at FROM roles"
-	rows, err := r.db.Query(query)
+	rows, err := this.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -67,9 +67,9 @@ func (r *RoleRepository) GetAllRoles() ([]*models.Role, error) {
 	return roles, nil
 }
 
-func (r *RoleRepository) CreateRole(name string, description string) (*models.Role, error) {
+func (this *RoleRepository) CreateRole(name string, description string) (*models.Role, error) {
 	query := "INSERT INTO roles (name, description, created_at, updated_at) VALUES (?, ?, NOW(), NOW())"
-	result, err := r.db.Exec(query, name, description)
+	result, err := this.db.Exec(query, name, description)
 	if err != nil {
 		return nil, err
 	}
@@ -88,9 +88,9 @@ func (r *RoleRepository) CreateRole(name string, description string) (*models.Ro
 	}, nil
 }
 
-func (r *RoleRepository) DeleteRoleById(id int64) error {
+func (this *RoleRepository) DeleteRoleById(id int64) error {
 	query := "DELETE FROM roles WHERE id = ?"
-	result, err := r.db.Exec(query, id)
+	result, err := this.db.Exec(query, id)
 	if err != nil {
 		return err
 	}
@@ -106,9 +106,9 @@ func (r *RoleRepository) DeleteRoleById(id int64) error {
 
 	return nil
 }
-func (r *RoleRepository) UpdateRole(id int64, name string, description string) (*models.Role, error) {
+func (this *RoleRepository) UpdateRole(id int64, name string, description string) (*models.Role, error) {
 	query := "UPDATE roles SET name = ?, description = ?, updated_at = NOW() WHERE id = ?"
-	_, err := r.db.Exec(query, name, description, id)
+	_, err := this.db.Exec(query, name, description, id)
 	if err != nil {
 		return nil, err
 	}
