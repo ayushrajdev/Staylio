@@ -5,7 +5,7 @@ import HotelController from "../../controllers/hotel.controller.ts";
 import { validate } from "../../utils/validators/index.ts";
 import { hotelSchema } from "../../utils/validators/hotel.schema.ts";
 
-const router = Router();
+const router:Router = Router();
 const hotelController = new HotelController();
 
 router

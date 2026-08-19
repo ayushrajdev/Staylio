@@ -21,10 +21,10 @@ app.use(genericErrorHandler);
 
 connectDb()
     .then((val) => {
-        logger.info('successfully connected to the db ');
-        app.listen(3000, async () => {
+        // logger.info('successfully connected to the db ');
+        app.listen(4000, async () => {
             loadEnv();
-            logger.info('started the server');
+            // logger.info('started the server');
         });
     })
     .catch((err) => {

@@ -30,7 +30,7 @@ redisClient
         });
 
         EmailQueueWorker();
-        app.listen(3000, () => {
+        app.listen(5000, () => {
             loadEnv();
             console.log('started the server');
         });

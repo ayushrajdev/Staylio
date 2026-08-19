@@ -17,3 +17,7 @@ func ReadJsonBody(r *http.Request, result any) error {
 	decoder.DisallowUnknownFields() // Prevent unknown fields from being included in the JSON body
 	return decoder.Decode(result)
 }
+
+
+
+
