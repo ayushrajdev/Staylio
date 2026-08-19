@@ -1,7 +1,7 @@
 package models
 
 type Role struct {
-	Id          int
+	Id          int64
 	Name        string
 	Description string
 	CreatedAt   string
@@ -9,7 +9,7 @@ type Role struct {
 }
 
 type Permission struct {
-	Id          int
+	Id          int64
 	Name        string
 	Description string
 	Resource    string
@@ -19,9 +19,9 @@ type Permission struct {
 }
 
 type RolePermission struct {
-	Id           int
-	RoleId       int
-	PermissionId int
+	Id           int64
+	RoleId       int64
+	PermissionId int64
 	CreatedAt    string
 	UpdatedAt    string
 }
