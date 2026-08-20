@@ -7,7 +7,7 @@ import { CrudService } from './crud.service.ts';
 import Room from '../db/models/room.ts';
 import { RoomRepository } from '../repositories/room.repository.ts';
 
-export default class RoomGenerationService extends CrudService<RoomCategoryRepository> {
+export default class RoomService extends CrudService<RoomCategoryRepository> {
     private roomCategoryRepository: RoomCategoryRepository;
     private roomRepository: RoomRepository;
 
