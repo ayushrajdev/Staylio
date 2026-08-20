@@ -1,0 +1,44 @@
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Environment variables (contains your real DB password — never commit this)
+.env
+
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Type checker / linter caches
+.mypy_cache/
+.ruff_cache/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# SQLite (if you ever test locally with it instead of MySQL)
+*.db
+*.sqlite3
