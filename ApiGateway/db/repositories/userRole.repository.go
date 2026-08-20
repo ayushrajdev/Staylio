@@ -23,7 +23,7 @@ type UserRoleRepository struct {
 	db *sql.DB
 }
 
-func NewUserRoleRepository(_db *sql.DB) IUserRoleRepository {
+func NewUserRoleRepository(_db *sql.DB) *UserRoleRepository {
 	return &UserRoleRepository{
 		db: _db,
 	}

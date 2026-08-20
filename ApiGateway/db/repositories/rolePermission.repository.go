@@ -17,7 +17,7 @@ type RolePermissionRepository struct {
 	db *sql.DB
 }
 
-func NewRolePermissionRepository(_db *sql.DB) IRolePermissionRepository {
+func NewRolePermissionRepository(_db *sql.DB) *RolePermissionRepository {
 	return &RolePermissionRepository{
 		db: _db,
 	}

@@ -39,18 +39,29 @@ func (app *Application) Run() error {
 	if err != nil {
 		return err
 	}
+	
 	defer dbconnection.Close()
 	userRepository := db.NewUserRepository(dbconnection)
 	userService := services.NewUserService(userRepository)
 	userController := controllers.NewUserController(userService)
 	userRouter := router.NewUserRouter(userController)
-
+	
+	roleRepository := db.NewRoleRepository(dbconnection)
+	rolePermissionRepository := db.NewRolePermissionRepository(dbconnection)
+	userRoleRepository := db.NewUserRoleRepository(dbconnection)
+	
+	roleService := services.NewRoleService(roleRepository, rolePermissionRepository, userRoleRepository)
+	roleController := controllers.NewRoleController(roleService)
+	roleRouter := router.NewRoleRouter(roleController)
+	
 	server := &http.Server{
 		Addr:         app.Config.Addr,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		Handler:      router.SetUpRouter(userRouter),
+		Handler:      router.SetUpRouter(userRouter, roleRouter),
 	}
+	
 	println("starting server on ", app.Config.Addr)
+	
 	return server.ListenAndServe()
 }
