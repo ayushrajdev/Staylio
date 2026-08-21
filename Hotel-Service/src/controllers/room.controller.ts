@@ -6,12 +6,20 @@ import type {
     RoomGenerationJobSchema,
 } from '../dtos/room.dto.ts';
 import { z } from 'zod';
+import RoomCategoryService from '../services/roomCategory.service.ts';
 
 export default class RoomController {
-    constructor() {}
+    private roomCategoryService: RoomCategoryService;
+    constructor() {
+        this.roomCategoryService = new RoomCategoryService();
+    }
 
     async generateRoomHandler(req: Request, res: Response): Promise<void> {
         try {
+            // const roomcategory = this.roomCategoryService.findById(
+            //     req.body.roomCategoryId,
+            // );
+            // req.body.noOfRooms = roomcategory.roomCount;
             RoomQueueProducer(req.body as RoomGenerationJob);
 
             res.status(200).json({

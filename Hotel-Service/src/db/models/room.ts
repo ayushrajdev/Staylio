@@ -1,5 +1,6 @@
 import {
   type CreationOptional,
+  DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
   Model,
@@ -13,7 +14,7 @@ class Room extends Model<InferAttributes<Room>, InferCreationAttributes<Room>> {
   declare id: CreationOptional<number>;
   declare hotelId: number;
   declare roomCategoryId: number;
-  declare dateOfAvailability: Date;
+  declare dateOfAvailability: string;
   declare price: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -45,7 +46,7 @@ Room.init(
       },
     },
     dateOfAvailability: {
-      type: 'DATE',
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     price: {

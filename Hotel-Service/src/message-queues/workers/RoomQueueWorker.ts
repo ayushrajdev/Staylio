@@ -1,6 +1,7 @@
-import { Worker } from 'bullmq';
+import { type Job, Worker } from 'bullmq';
 import { Queues } from '../../config/index.config.ts';
 import redisClient from '../../config/redis.config.ts';
+import type { RoomGenerationJob } from '../../dtos/room.dto.ts';
 import { roomService } from '../../services/room.service.ts';
 
 export default function RoomQueueWorker() {
@@ -8,23 +9,21 @@ export default function RoomQueueWorker() {
 
     const worker = new Worker(
         Queues.ROOM_QUEUE,
-        async (job) => {
+        async (job: Job) => {
             try {
                 if (job.name !== 'room') {
                     return;
                 }
-    
+
                 console.log(
                     `Processing job ${job.id} of type ${job.name} with data:`,
                     job.data,
                 );
-    
-                roomService.generateRoomsByJob(job.data)
+
+                roomService.generateRoomsByJob(job.data as RoomGenerationJob);
             } catch (error) {
                 console.table(error);
-
             }
-
         },
         {
             connection: redisClient,

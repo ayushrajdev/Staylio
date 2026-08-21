@@ -1,10 +1,7 @@
 import type { CreationAttributes } from 'sequelize';
 import logger from '../config/logger.config.ts';
 import RoomCategory from '../db/models/roomCategory.ts';
-import type {
-    RoomGenerationJob,
-    RoomGenerationRequest,
-} from '../dtos/room.dto.ts';
+import type { RoomGenerationJob } from '../dtos/room.dto.ts';
 import { RoomCategoryRepository } from '../repositories/roomCategory.repository.ts';
 import { CrudService } from './crud.service.ts';
 import Room from '../db/models/room.ts';
@@ -16,6 +13,7 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
 
     constructor() {
         super(new RoomCategoryRepository());
+
         this.roomCategoryRepository = new RoomCategoryRepository();
         this.roomRepository = new RoomRepository();
     }
@@ -27,42 +25,51 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
         const roomCategory = await this.roomCategoryRepository.findById(
             jobData.roomCategoryId,
         );
-        console.log(`Room category: ${roomCategory}`)
+
         if (!roomCategory) {
             throw new Error(
                 `Room category with ID ${jobData.roomCategoryId} not found`,
             );
         }
-        const startDate = new Date(jobData.startDate);
-        const endDate = new Date(jobData.endDate);
 
-        if (startDate >= endDate) {
-            console.error(`Start date must be before end date`);
-            throw new Error(`Start date must be before end date`);
+        if (roomCategory.roomCount < 1) {
+            throw new Error(
+                `Room category ${roomCategory.id} has invalid roomCount`,
+            );
         }
 
-        if (startDate < new Date()) {
-            console.error(`Start date must be in the future`);
-            throw new Error(`Start date must be in the future`);
+        const startDate = jobData.startDate;
+        const endDate = jobData.endDate;
+
+        if (!isValidDateOnly(startDate)) {
+            throw new Error(
+                `Invalid startDate: ${startDate}. Expected YYYY-MM-DD`,
+            );
         }
 
-        const totalDays = Math.ceil(
-            (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
-        );
+        if (!isValidDateOnly(endDate)) {
+            throw new Error(`Invalid endDate: ${endDate}. Expected YYYY-MM-DD`);
+        }
 
-        logger.info(`Generating rooms for ${totalDays} days`);
+        if (startDate > endDate) {
+            throw new Error('Start date must be before or equal to end date');
+        }
 
-        const batchSize = jobData.batchSize || 100; // put it in env variable or a some config
+        const today = getTodayDateOnly();
 
-        const currentDate = new Date(startDate);
+        if (startDate < today) {
+            throw new Error('Start date must be today or in the future');
+        }
 
-        while (currentDate < endDate) {
-            const batchEndDate = new Date(currentDate);
+        const batchSize = jobData.batchSize || 100;
 
-            batchEndDate.setDate(batchEndDate.getDate() + batchSize);
+        let currentDate = startDate;
+
+        while (currentDate <= endDate) {
+            let batchEndDate = addDays(currentDate, batchSize - 1);
 
             if (batchEndDate > endDate) {
-                batchEndDate.setTime(endDate.getTime());
+                batchEndDate = endDate;
             }
 
             const batchResult = await this.processDateBatch(
@@ -72,21 +79,15 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
                 jobData.priceOverride,
             );
 
-            console.log(`Rooms created: ${batchResult}`);
-
             totalRoomsCreated += batchResult.roomsCreated;
             totalDatesProcessed += batchResult.datesProcessed;
 
-            currentDate.setTime(batchEndDate.getTime());
+            currentDate = addDays(batchEndDate, 1);
         }
 
-        console.table({
-            totalDatesProcessed,
-            totalRoomsCreated,
-            roomCategory,
-            startDate,
-            endDate,
-        });
+        logger.info(
+            `Room generation completed. Dates processed: ${totalDatesProcessed}, rooms created: ${totalRoomsCreated}`,
+        );
 
         return {
             totalRoomsCreated,
@@ -96,53 +97,63 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
 
     async processDateBatch(
         roomCategory: RoomCategory,
-        startDate: Date,
-        endDate: Date,
+        startDate: string,
+        endDate: string,
         priceOverride?: number,
     ) {
         let roomsCreated = 0;
         let datesProcessed = 0;
+
         const roomsToCreate: CreationAttributes<Room>[] = [];
 
-        const currentDate = new Date(startDate);
+        let currentDate = startDate;
 
-        // SELECT * FROM ROOM_CATEGORY WHERE ID = ? AND DATE_OF_AVAILABILITY BETWEEN ? and ?
-        // TODO: Use a better query to get the rooms
         while (currentDate <= endDate) {
-            const existingRoom =
-                await this.roomRepository.findByRoomCategoryIdAndDate(
+            const existingRooms =
+                await this.roomRepository.findAllByRoomCategoryIdAndDate(
                     roomCategory.id,
                     currentDate,
                 );
 
+            const existingRoomCount = existingRooms.length;
+
+            const roomsNeeded = roomCategory.roomCount - existingRoomCount;
+
             logger.info(
-                `Existing room: ${JSON.stringify(existingRoom)} : ${currentDate}`,
+                `${currentDate}: existing=${existingRoomCount}, required=${roomCategory.roomCount}, creating=${Math.max(
+                    roomsNeeded,
+                    0,
+                )}`,
             );
 
-            if (!existingRoom) {
-                const roomPayload = {
-                    hotelId: roomCategory.hotelId,
-                    roomCategoryId: roomCategory.id,
-                    dateOfAvailability: new Date(currentDate),
-                    price: priceOverride || roomCategory.price,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    deletedAt: null,
-                };
-                console.log(`Room payload: ${JSON.stringify(roomPayload)}`);
-                roomsToCreate.push(roomPayload);
+            if (roomsNeeded > 0) {
+                for (let i = 0; i < roomsNeeded; i++) {
+                    roomsToCreate.push({
+                        hotelId: roomCategory.hotelId,
+                        roomCategoryId: roomCategory.id,
+                        dateOfAvailability: currentDate,
+                        price:
+                            priceOverride !== undefined
+                                ? priceOverride
+                                : roomCategory.price,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        deletedAt: null,
+                    });
+                }
             }
 
-            currentDate.setDate(currentDate.getDate() + 1);
             datesProcessed++;
-        }
 
-        console.log(`Rooms to create: ${JSON.stringify(roomsToCreate)}`);
+            currentDate = addDays(currentDate, 1);
+        }
 
         if (roomsToCreate.length > 0) {
             logger.info(`Creating ${roomsToCreate.length} rooms`);
+
             await this.roomRepository.bulkCreate(roomsToCreate);
-            roomsCreated += roomsToCreate.length;
+
+            roomsCreated = roomsToCreate.length;
         }
 
         return {
@@ -150,6 +161,68 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
             datesProcessed,
         };
     }
+}
+
+function isValidDateOnly(value: string): boolean {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        return false;
+    }
+
+    const parts = value.split('-');
+
+    if (parts.length !== 3) {
+        return false;
+    }
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    if (
+        !Number.isInteger(year) ||
+        !Number.isInteger(month) ||
+        !Number.isInteger(day)
+    ) {
+        return false;
+    }
+
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    return (
+        date.getUTCFullYear() === year &&
+        date.getUTCMonth() === month - 1 &&
+        date.getUTCDate() === day
+    );
+}
+
+function addDays(dateString: string, days: number): string {
+    const parts = dateString.split('-');
+
+    if (parts.length !== 3) {
+        throw new Error(`Invalid date format: ${dateString}`);
+    }
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    date.setUTCDate(date.getUTCDate() + days);
+
+    return date.toISOString().slice(0, 10);
+}
+/**
+ * Current calendar date as YYYY-MM-DD.
+ */
+function getTodayDateOnly(): string {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
 }
 
 const roomService = new RoomService();
