@@ -6,6 +6,7 @@ import { genericErrorHandler } from './middlewares/error.middleware.ts';
 import logger from './config/logger.config.ts';
 import { attachCorrelationId } from './middlewares/correlation.middleware.ts';
 import { connectDb } from './config/dbConnection.config.ts';
+import redisClient from './config/redis.config.ts';
 
 const app = express();
 
@@ -19,14 +20,22 @@ app.use('/api/v2', v2Router);
 
 app.use(genericErrorHandler);
 
-connectDb()
-    .then((val) => {
-        // logger.info('successfully connected to the db ');
-        app.listen(4000, async () => {
-            loadEnv();
-            // logger.info('started the server');
-        });
+redisClient
+    .connect()
+    .then(() => {
+        console.log('Redis client connected');
+        connectDb()
+            .then((val) => {
+                // logger.info('successfully connected to the db ');
+                app.listen(4000, async () => {
+                    loadEnv();
+                    // logger.info('started the server');
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     })
-    .catch((err) => {
-        console.log(err);
+    .catch((err: Error) => {
+        console.log(err.message);
     });

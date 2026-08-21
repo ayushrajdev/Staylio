@@ -16,3 +16,7 @@ loadEnv();
 export const serverConfig: serverConfig = {
     PORT: Number(process.env.PORT) || 3000,
 };
+
+export const Queues = {
+    ROOM_QUEUE: 'RoomQueue',
+};
