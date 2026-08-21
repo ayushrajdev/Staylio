@@ -8,7 +8,7 @@ import { attachCorrelationId } from './middlewares/correlation.middleware.ts';
 import { connectDb } from './config/dbConnection.config.ts';
 import redisClient from './config/redis.config.ts';
 import RoomQueueWorker from './message-queues/workers/RoomQueueWorker.ts';
-
+import './cron-jobs/roomGeneration.scheduler.ts';
 const app = express();
 
 app.use(express.json());
