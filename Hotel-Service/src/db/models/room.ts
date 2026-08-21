@@ -1,7 +1,7 @@
 import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
+  type CreationOptional,
+  type InferAttributes,
+  type InferCreationAttributes,
   Model,
 } from 'sequelize';
 import sequelize from '../../config/sequelize.config.ts';

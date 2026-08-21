@@ -16,7 +16,6 @@ export const RoomGenerationJobSchema = z.object({
     endDate: z.string().datetime(),
     priceOverride: z.number().positive().optional(),
     batchSize: z.number().positive().default(100),
-    noOfRooms: z.number().positive().default(1),
 });
 
 export type RoomGenerationJob = z.infer<typeof RoomGenerationJobSchema>;

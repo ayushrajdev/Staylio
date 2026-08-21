@@ -7,6 +7,7 @@ import logger from './config/logger.config.ts';
 import { attachCorrelationId } from './middlewares/correlation.middleware.ts';
 import { connectDb } from './config/dbConnection.config.ts';
 import redisClient from './config/redis.config.ts';
+import RoomQueueWorker from './message-queues/workers/RoomQueueWorker.ts';
 
 const app = express();
 
@@ -29,6 +30,7 @@ redisClient
                 // logger.info('successfully connected to the db ');
                 app.listen(4000, async () => {
                     loadEnv();
+                    RoomQueueWorker()
                     // logger.info('started the server');
                 });
             })

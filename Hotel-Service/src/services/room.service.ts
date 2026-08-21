@@ -1,7 +1,10 @@
-import { CreationAttributes } from 'sequelize';
+import type { CreationAttributes } from 'sequelize';
 import logger from '../config/logger.config.ts';
 import RoomCategory from '../db/models/roomCategory.ts';
-import { RoomGenerationJob, RoomGenerationRequest } from '../dtos/room.dto.ts';
+import type {
+    RoomGenerationJob,
+    RoomGenerationRequest,
+} from '../dtos/room.dto.ts';
 import { RoomCategoryRepository } from '../repositories/roomCategory.repository.ts';
 import { CrudService } from './crud.service.ts';
 import Room from '../db/models/room.ts';
@@ -24,6 +27,7 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
         const roomCategory = await this.roomCategoryRepository.findById(
             jobData.roomCategoryId,
         );
+        console.log(`Room category: ${roomCategory}`)
         if (!roomCategory) {
             throw new Error(
                 `Room category with ID ${jobData.roomCategoryId} not found`,
@@ -68,19 +72,27 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
                 jobData.priceOverride,
             );
 
+            console.log(`Rooms created: ${batchResult}`);
+
             totalRoomsCreated += batchResult.roomsCreated;
             totalDatesProcessed += batchResult.datesProcessed;
 
             currentDate.setTime(batchEndDate.getTime());
-        }   
+        }
+
+        console.table({
+            totalDatesProcessed,
+            totalRoomsCreated,
+            roomCategory,
+            startDate,
+            endDate,
+        });
 
         return {
             totalRoomsCreated,
             totalDatesProcessed,
         };
     }
-
-    // async generateRoomsByRequest(data: RoomGenerationRequest) {}
 
     async processDateBatch(
         roomCategory: RoomCategory,
@@ -139,3 +151,7 @@ export default class RoomService extends CrudService<RoomCategoryRepository> {
         };
     }
 }
+
+const roomService = new RoomService();
+
+export { roomService };

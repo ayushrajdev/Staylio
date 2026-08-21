@@ -1,20 +1,25 @@
+// Runtime imports
+import { Model, DataTypes } from 'sequelize';
+
+// Type-only imports
 import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  Model,
+  type CreationOptional,
+  type InferAttributes,
+  type InferCreationAttributes,
 } from 'sequelize';
+
 import sequelize from '../../config/sequelize.config.ts';
 import Hotel from './hotel.ts';
 
+const RoomType = {
+  SINGLE: 'SINGLE',
+  DOUBLE: 'DOUBLE',
+  FAMILY: 'FAMILY',
+  DELUXE: 'DELUXE',
+  SUITE: 'SUITE',
+} as const;
 
-enum RoomType {
-  SINGLE = 'SINGLE',
-  DOUBLE = 'DOUBLE',
-  FAMILY = 'FAMILY',
-  DELUXE = 'DELUXE',
-  SUITE = 'SUITE',
-}
+type RoomType = (typeof RoomType)[keyof typeof RoomType];
 
 class RoomCategory extends Model<
   InferAttributes<RoomCategory>,
@@ -33,48 +38,55 @@ class RoomCategory extends Model<
 RoomCategory.init(
   {
     id: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
+
     hotelId: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Hotel,
         key: 'id',
       },
     },
+
     price: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
+
     roomType: {
-      type: 'ENUM',
-      values: [...Object.values(RoomType)],
-    },
-    roomCount: {
-      type: 'INTEGER',
+      type: DataTypes.ENUM(...Object.values(RoomType)),
       allowNull: false,
     },
+
+    roomCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+
     createdAt: {
-      type: 'DATE',
-      defaultValue: new Date(),
+      type: DataTypes.DATE,
     },
+
     updatedAt: {
-      type: 'DATE',
-      defaultValue: new Date(),
+      type: DataTypes.DATE,
     },
+
     deletedAt: {
-      type: 'DATE',
+      type: DataTypes.DATE,
+      allowNull: true,
       defaultValue: null,
     },
   },
   {
     tableName: 'room_categories',
-    sequelize: sequelize,
+    sequelize,
     underscored: true,
     timestamps: true,
+    paranoid: true,
   }
 );
 

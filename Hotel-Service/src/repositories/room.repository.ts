@@ -1,4 +1,4 @@
-import { CreationAttributes } from 'sequelize';
+import type { CreationAttributes } from 'sequelize';
 import Room from '../db/models/room.ts';
 import { CrudRepository } from './crud.repository.ts';
 

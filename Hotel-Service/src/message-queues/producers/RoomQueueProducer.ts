@@ -1,4 +1,4 @@
-import { RoomGenerationJob } from "../../dtos/room.dto.ts";
+import type { RoomGenerationJob } from "../../dtos/room.dto.ts";
 import RoomQueue from "../queues/RoomQueue.ts";
 
 async function RoomQueueProducer(data: RoomGenerationJob) {

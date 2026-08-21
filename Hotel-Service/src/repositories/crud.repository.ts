@@ -15,12 +15,12 @@ export abstract class CrudRepository<T extends Model> {
         return this.model.findAll();
     }
 
-    async findById(id: number): Promise<T> {
+    async findById(id: number): Promise<any> {
         const record = await this.model.findByPk(id);
 
-        if (!record) {
-            throw new Error('Record not found');
-        }
+        // if (!record) {
+        //     throw new Error('Record not found');
+        // }
 
         return record;
     }
